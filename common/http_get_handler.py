@@ -1,4 +1,6 @@
 import base64
+import re
+from typing import List
 from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler
 
@@ -55,13 +57,28 @@ class HttpGetHandler(BaseHTTPRequestHandler):
 
     def __do_request_from_proxy_and_response_back(self, cached_response: requests.Response, path: str, method: str,
                                                   headers: dict) -> requests.Response:
+        if self.settings.append_parameter is not None:
+            for key, append_param in self.settings.append_parameter.items():
+                if path == key:
+                    path = path + append_param
+                    break
+
         cached_response = self.__fill_cached_response(cached_response, method, self.settings.host_for_request, path,
-                                                      headers, self.settings.base64_key)
+                                                      headers, self.settings.base64_keys)
 
         self.send_response(cached_response.status_code)
         self.__add_headers_for_response()
 
-        self.wfile.write(cached_response.text.encode())
+        if self.settings.strings_for_replace is not None:
+            response_text = cached_response.text
+            for path_key, replace_dict in self.settings.strings_for_replace.items():
+                if self.path == path_key:
+                    for regex, replace_str in replace_dict.items():
+                        response_text = re.sub(regex, replace_str, response_text)
+
+            self.wfile.write(response_text.encode())
+        else:
+            self.wfile.write(cached_response.text.encode())
 
         return cached_response
 
@@ -81,12 +98,12 @@ class HttpGetHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def __fill_cached_response(cached_response: requests.Response, method: str, host: str, path: str,
-                               headers: dict, base64_key: str) -> requests.Response:
+                               headers: dict, base64_keys: List[str]) -> requests.Response:
         if "Host" in headers:
             headers["Host"] = host.split("//")[1]
 
-        if base64_key is not None:
-            path = HttpGetHandler.__encode_to_base64_param_string(path, base64_key)
+        if base64_keys is not None:
+            path = HttpGetHandler.__encode_to_base64_param_string(path, base64_keys)
 
         temp_response = None
         try:
@@ -103,17 +120,18 @@ class HttpGetHandler(BaseHTTPRequestHandler):
         return cached_response
 
     @staticmethod
-    def __encode_to_base64_param_string(path: str, base64_key: str) -> str:
+    def __encode_to_base64_param_string(path: str, base64_keys: List[str]) -> str:
         parsed_params = urlparse(path).query.split("&")
 
         for param in parsed_params:
             param_key = param.split("=")[0]
             param_value = param.split("=")[1]
 
-            if param_key == base64_key:
-                base64_encoded_message = base64.b64encode(param_value.encode("ascii"))
-                path = path.replace(param_value, base64_encoded_message.decode("ascii"))
+            for base64_key in base64_keys:
+                if param_key == base64_key:
+                    base64_encoded_message = base64.b64encode(param_value.encode("ascii"))
+                    path = path.replace(param_value, base64_encoded_message.decode("ascii"))
 
-                break
+                    break
 
         return path
