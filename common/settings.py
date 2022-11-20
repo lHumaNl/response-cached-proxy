@@ -12,6 +12,7 @@ from models.param_names import ParamNames
 class Settings:
     util_port: int
     host_for_request: str
+    timeout: int
     base64_keys: List[str]
     append_parameter: Dict[str, str]
     strings_for_replace: Dict[str, Dict[str, str]]
@@ -25,6 +26,7 @@ class Settings:
 
         self.util_port = self.__get_value_from_dict(args_dict, ParamNames.UTIL_PORT)
         self.host_for_request = self.__get_value_from_dict(config_dict, ParamNames.LINK)
+        self.timeout = self.__get_value_from_dict(config_dict, ParamNames.TIMEOUT, True, 10)
         self.base64_keys = self.__get_value_from_dict(config_dict, ParamNames.BASE64_KEYS, True)
         self.append_parameter = self.__get_value_from_dict(config_dict, ParamNames.APPEND_PARAM, True)
         self.strings_for_replace = self.__get_value_from_dict(config_dict, ParamNames.STRINGS_FOR_REPLACE, True)

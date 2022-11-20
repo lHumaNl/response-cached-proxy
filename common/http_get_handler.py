@@ -64,7 +64,7 @@ class HttpGetHandler(BaseHTTPRequestHandler):
                     break
 
         cached_response = self.__fill_cached_response(cached_response, method, self.settings.host_for_request, path,
-                                                      headers, self.settings.base64_keys)
+                                                      headers, self.settings.base64_keys, self.settings.timeout)
 
         self.send_response(cached_response.status_code)
         self.__add_headers_for_response()
@@ -76,9 +76,9 @@ class HttpGetHandler(BaseHTTPRequestHandler):
                     for regex, replace_str in replace_dict.items():
                         response_text = re.sub(regex, replace_str, response_text)
 
-            self.wfile.write(response_text.encode())
+            self.wfile.write(response_text.encode(encoding='utf-8'))
         else:
-            self.wfile.write(cached_response.text.encode())
+            self.wfile.write(cached_response.text.encode(encoding='utf-8'))
 
         return cached_response
 
@@ -98,7 +98,7 @@ class HttpGetHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def __fill_cached_response(cached_response: requests.Response, method: str, host: str, path: str,
-                               headers: dict, base64_keys: List[str]) -> requests.Response:
+                               headers: dict, base64_keys: List[str], timeout: int) -> requests.Response:
         if "Host" in headers:
             headers["Host"] = host.split("//")[1]
 
@@ -108,9 +108,9 @@ class HttpGetHandler(BaseHTTPRequestHandler):
         temp_response = None
         try:
             if method == HttpGetHandler.__GET_METHOD:
-                temp_response = requests.get(f"{host}{path}", headers=headers)
+                temp_response = requests.get(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
             elif method == HttpGetHandler.__POST_METHOD:
-                temp_response = requests.post(f"{host}{path}", headers=headers)
+                temp_response = requests.post(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
         except Exception:
             pass
 
