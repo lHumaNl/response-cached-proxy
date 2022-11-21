@@ -4,11 +4,13 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONIOENCODING "UTF-8"
 
+EXPOSE 9119
+
 RUN ["mkdir", "app"]
 
 COPY [".", "/app"]
 
-WORKDIR /app
+WORKDIR "/app"
 
 RUN ["pip", "install", "-r", "requirements.txt"]
 
