@@ -99,8 +99,10 @@ class HttpGetHandler(BaseHTTPRequestHandler):
     @staticmethod
     def __fill_cached_response(cached_response: requests.Response, method: str, host: str, path: str,
                                headers: dict, base64_keys: List[str], timeout: int) -> requests.Response:
-        if "Host" in headers:
-            headers["Host"] = host.split("//")[1]
+        for header in headers.keys():
+            if 'host' == header.lower():
+                headers[header] = host.split("//")[1]
+                break
 
         if base64_keys is not None:
             path = HttpGetHandler.__encode_to_base64_param_string(path, base64_keys)
