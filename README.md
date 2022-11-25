@@ -29,7 +29,7 @@ Key | Required | Default value | Type | Description | Example
 -|-|-|-|-|-
 `link` | True | Null | String | Link to service | `"link": "https://<host>"`
 `timeout` | False | 10 | Integer | Timeout from service | `"timeout": 2`
-`base64_keys` | False | Null | JsonArray\[String] | Param keys for base64Encoding | `"base64_keys": \["email"]`
+`base64_keys` | False | Null | JsonArray\[String] | Param keys for base64Encoding | `"base64_keys": ["email"]`
 `append_param` | False | Null | JsonObject{String(`request path`): String(`append params`)} | Append params to the request path | `"append_param": {"/modss": "?email=*****&logged=true"}`
 `strings_for_replace` | False | Null | JsonObject{String(`request path`): {String(`regEx`): String(`custom string`)}} | Request path where need to set a custom string by regEx | `"strings_for_replace": {"/modss": {"API \\+ 'EPG'": "'http://10.10.0.21:9120/EPG'", "API \\+ 'tvPL'": "'http://10.10.0.21:9120/tvPL'"}`
 
