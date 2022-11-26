@@ -1,11 +1,15 @@
 import base64
+import logging
+import os
 import re
+import traceback
 from typing import List
 from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler
 
 import requests
 
+from common.exceptions import Exceptions
 from common.response_mock import ResponseMock
 from common.settings import Settings
 
@@ -113,8 +117,14 @@ class HttpGetHandler(BaseHTTPRequestHandler):
                 temp_response = requests.get(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
             elif method == HttpGetHandler.__POST_METHOD:
                 temp_response = requests.post(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
+        except requests.exceptions.ReadTimeout:
+            logging.error(f'Read from "{host}{path}" timeout!')
+        except requests.exceptions.ConnectionError as connection_error:
+            Exceptions.resolve_requests_exceptions_connection_error(connection_error)
+        except requests.exceptions.HTTPError:
+            logging.error(f'Confluence connection error!{os.linesep + traceback.format_exc()}')
         except Exception:
-            pass
+            logging.critical(f'There was unexpected critical error{os.linesep + traceback.format_exc()}')
 
         if temp_response is not None and temp_response.status_code == 200:
             cached_response = temp_response
