@@ -1,6 +1,6 @@
 # ResponseCashedProxy
 
-This utility works like a regular proxy, but at the same time it caches the response from the service in RAM and, 
+This utility works like a regular proxy, but at the same time it caches the response from the service in RAM and,
 if this service is unavailable, returns the last successful response.
 
 ## Utility Features
@@ -20,7 +20,7 @@ Arg | Required | Default value | Description
 ## Instruction for JSON config file
 
 First of all, you need to create `config` folder near `main.py` file.
-Then create inside this folder blank new file. Strongly recommended to create file with name `config.json`, 
+Then create inside this folder blank new file. Strongly recommended to create file with name `config.json`,
 because in the future it is not expected to enter a console argument `--config_file`.
 
 ### JSON config keys
@@ -58,9 +58,9 @@ Key | Required | Default value | Type | Description | Example
 
 1. Build image `docker build -t response-cached-proxy .`
 2. Run container ```docker run -d
-    --restart always
-    -p 9119:9119
-    -v <path-to-config-folder>:/app/config
-    -it
-    --name response-cached-proxy
-    response-cached-proxy```
+   --restart always
+   -p 9119:9119
+   -v <path-to-config-folder>:/app/config
+   -it
+   --name response-cached-proxy
+   response-cached-proxy```
