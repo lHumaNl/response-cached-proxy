@@ -28,6 +28,7 @@ because in the future it is not expected to enter a console argument `--config_f
 Key | Required | Default value | Type | Description | Example
 -|-|-|-|-|-
 `link` | True | Null | String | Link to service | `"link": "https://<host>"`
+`ssl_verify` | False | False | Boolean | Ignore SSL verify | `"ssl_verify": false`
 `timeout` | False | 10 | Integer | Timeout from service | `"timeout": 2`
 `base64_keys` | False | Null | JsonArray\[String] | Param keys for base64Encoding | `"base64_keys": ["email"]`
 `append_param` | False | Null | JsonObject{String(`request path`): String(`append params`)} | Append params to the request path | `"append_param": {"/modss": "?email=*****&logged=true"}`
@@ -38,6 +39,7 @@ Key | Required | Default value | Type | Description | Example
 ```
 {
   "link": "https://lampa.stream",
+  "ssl_verify": false,
   "timeout": 5,
   "base64_keys": [
     "email"

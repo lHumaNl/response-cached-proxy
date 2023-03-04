@@ -68,7 +68,8 @@ class HttpGetHandler(BaseHTTPRequestHandler):
                     break
 
         cached_response = self.__fill_cached_response(cached_response, method, self.settings.host_for_request, path,
-                                                      headers, self.settings.base64_keys, self.settings.timeout)
+                                                      headers, self.settings.base64_keys, self.settings.timeout,
+                                                      self.settings.ssl_verify)
 
         self.send_response(cached_response.status_code)
         self.__add_headers_for_response()
@@ -102,11 +103,15 @@ class HttpGetHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def __fill_cached_response(cached_response: requests.Response, method: str, host: str, path: str,
-                               headers: dict, base64_keys: List[str], timeout: int) -> requests.Response:
+                               headers: dict, base64_keys: List[str], timeout: int,
+                               ssl_verify: bool) -> requests.Response:
         for header in headers.keys():
             if 'host' == header.lower():
                 headers[header] = host.split("//")[1]
                 break
+
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' \
+                                'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
 
         if base64_keys is not None:
             path = HttpGetHandler.__encode_to_base64_param_string(path, base64_keys)
@@ -114,9 +119,9 @@ class HttpGetHandler(BaseHTTPRequestHandler):
         temp_response = None
         try:
             if method == HttpGetHandler.__GET_METHOD:
-                temp_response = requests.get(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
+                temp_response = requests.get(f"{host}{path}", headers=headers, verify=ssl_verify, timeout=timeout)
             elif method == HttpGetHandler.__POST_METHOD:
-                temp_response = requests.post(f"{host}{path}", headers=headers, verify=False, timeout=timeout)
+                temp_response = requests.post(f"{host}{path}", headers=headers, verify=ssl_verify, timeout=timeout)
         except requests.exceptions.ReadTimeout:
             logging.error(f'Read from "{host}{path}" timeout!')
         except requests.exceptions.ConnectionError as connection_error:

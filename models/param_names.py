@@ -4,6 +4,7 @@ class ParamNames:
     UTIL_PORT = 'util_port'
 
     LINK = 'link'
+    SSL_VERIFY = 'ssl_verify'
     TIMEOUT = 'timeout'
     BASE64_KEYS = 'base64_keys'
     APPEND_PARAM = 'append_param'

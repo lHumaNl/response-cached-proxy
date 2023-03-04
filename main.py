@@ -3,12 +3,15 @@ import os
 from http.server import HTTPServer
 from typing import Dict
 
+import urllib3
+
 from common.http_get_handler import HttpGetHandler
 from common.settings import Settings
 from models.param_names import ParamNames
 
 
 def parse_console_args_and_get_settings() -> Dict:
+
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument(f"--{ParamNames.UTIL_PORT}", type=int,
                              default=os.environ.get(f"{ParamNames.UTIL_PORT.upper()}", default=9119))
@@ -22,6 +25,8 @@ def parse_console_args_and_get_settings() -> Dict:
 
 
 def main():
+    urllib3.disable_warnings()
+
     args_dict = parse_console_args_and_get_settings()
 
     settings = Settings(args_dict)
